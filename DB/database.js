@@ -30,10 +30,7 @@ const film = mongoose.model("films", FilmSchema);
 async function saveFilm(inFilm)
 {
     const filmToSave = new film(inFilm);
-    await filmToSave.save()
-        .catch(err => {
-            console.log("***Error:", err);
-        });
+    return filmToSave.save();
 }
 
 async function findAllFilms()
@@ -50,13 +47,13 @@ async function findFilmByID(id)
 async function updateFilm(id, newFilm)
 {
     const monId = new mongoose.Types.ObjectId(id);
-    await film.updateOne({ _id: monId }, { $set : newFilm});
+    return film.updateOne({ _id: monId }, { $set : newFilm});
 }
 
 async function deleteFilm(id)
 {
     const monId = new mongoose.Types.ObjectId(id);
-    await film.deleteOne({_id : monId});
+    return film.deleteOne({_id : monId});
 }
 
 module.exports = { saveFilm, findFilmByID, findAllFilms, updateFilm, deleteFilm}

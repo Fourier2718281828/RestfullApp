@@ -15,21 +15,38 @@ app.listen(PORT, () => {
 
 app.get("/", (req, res) => res.send("Home page"));
 
-app.post("/film", async (req, res) => {
-    console.log("Body: ", req.body);
-    res.send("shto nibud");
-    await saveFilm(req.body);
+app.post("/film", (req, res) => {
+    saveFilm(req.body)
+        .then(() => {
+            res.send("Saved successfully.");
+        })
+        .catch(err => {
+            res.send(`Save error: ${ err.message }`);
+        });
 });
 
-app.get("/film/:id", async (req, res) => {
+app.get("/film/:id", (req, res) => {
     const id = req.params.id;
-    const foundFilm = await findFilmByID(id);
-    res.send(foundFilm);
+    findFilmByID(id)
+        .then(result => {
+            if(!result)
+                res.send(`No film with id ${id} was found.`);
+            else
+                res.send(result);
+        })
+        .catch(err => {
+            res.send(`Find error: ${ err.message }`);
+        });
 });
 
-app.get("/films", async (req, res) => {
-    const foundFilm = await findAllFilms();
-    res.send(foundFilm);
+app.get("/films", (req, res) => {
+    findAllFilms()
+        .then(foundFilm => {
+            res.send(foundFilm);
+        })
+        .catch(err => {
+            res.send(`Find all error: ${ err.message }`);
+        });
 });
 
 app.patch("/film", async (req, res) => {
@@ -37,14 +54,30 @@ app.patch("/film", async (req, res) => {
     const id = body.id;
     const updatedFields = {...body};
     delete updatedFields.id;
-    await updateFilm(id, updatedFields);
-    res.send("Updated successfully.");
+    updateFilm(id, updatedFields)
+        .then((updated) => {
+            if(updated.matchedCount === 0)
+                res.send(`Film with id ${id} does not exist.`);
+            else
+                res.send(`Successful update of film with id ${id}`);
+        })
+        .catch(err => {
+            res.send(`Update error: ${ err.message }`);
+        });
 });
 
 app.delete("/film/:id", async (req, res) => {
     const id = req.params.id;
-    await deleteFilm(id);
-    res.send("Deleted successfully.");
+    deleteFilm(id)
+        .then((deleted) => {
+            if(deleted.deletedCount === 0)
+                res.send(`Film with id ${id} does not exist.`);
+            else
+                res.send(`Successful delete of film with id ${id}`);
+        })
+        .catch(err => {
+            res.send(`Delete error: ${ err.message }`);
+        });
 });
 
 mongoose.connect(mongoConfig.db, {
