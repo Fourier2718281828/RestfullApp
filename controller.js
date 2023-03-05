@@ -2,7 +2,16 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const PORT = 8000;
-const { saveFilm, findFilmByID, findAllFilms, updateFilm, deleteFilm, dbSetUp } = require("./DB/database");
+const {
+    saveFilm,
+    findFilmByID,
+    findAllFilms,
+    updateFilm,
+    deleteFilm,
+    dbSetUp,
+    findFilmsByGenre,
+    findFilmsByName
+} = require("./DB/database");
 
 
 app.use(express.static(__dirname));
@@ -24,7 +33,7 @@ app.post("/film", async (req, res) => {
     }
 });
 
-app.get("/film/:id", async (req, res) => {
+app.get("/film/id/:id", async (req, res) => {
     try {
         const id = req.params.id;
         const result = await findFilmByID(id);
@@ -69,7 +78,7 @@ app.patch("/film", async (req, res) => {
     }
 });
 
-app.delete("/film/:id", async (req, res) => {
+app.delete("/film/id/:id", async (req, res) => {
 
     try {
         const id = req.params.id;
@@ -84,3 +93,31 @@ app.delete("/film/:id", async (req, res) => {
     }
 });
 
+app.get("/film/name/:name", async (req, res) => {
+    try {
+        const name = req.params.name;
+        const result = await findFilmsByName(name);
+        if(!result)
+            res.send(`No film with name ${name} was found.`);
+        else
+            res.send(result);
+    }
+    catch (err) {
+        res.send(`Find error: ${ err.message }.`);
+    }
+});
+
+app.get("/film/genre/:genre", async (req, res) => {
+    try {
+        console.log(req.params);
+        const genre = req.params.genre;
+        const result = await findFilmsByGenre(genre);
+        if(!result)
+            res.send(`No film with genre ${genre} was found.`);
+        else
+            res.send(result);
+    }
+    catch (err) {
+        res.send(`Find error: ${ err.message }.`);
+    }
+});

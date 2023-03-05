@@ -78,4 +78,25 @@ async function deleteFilm(id)
     return deleteResult;
 }
 
-module.exports = { saveFilm, findFilmByID, findAllFilms, updateFilm, deleteFilm, dbSetUp }
+async function findFilmsByGenre(genre)
+{
+    const foundFilms = await film.find({ genre: genre });
+    return foundFilms;
+}
+
+async function findFilmsByName(name)
+{
+    const foundFilms = await film.find({ name: name });
+    return foundFilms;
+}
+
+module.exports = {
+    saveFilm,
+    findFilmByID,
+    findAllFilms,
+    updateFilm,
+    deleteFilm,
+    dbSetUp,
+    findFilmsByGenre,
+    findFilmsByName
+}
