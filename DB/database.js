@@ -1,5 +1,22 @@
 "use strict";
 const mongoose = require("mongoose");
+const { mongoConfig } = require("./config");
+
+function dbSetUp()
+{
+    mongoose.connect(mongoConfig.db, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+
+    mongoose.connection.on("connected", () => {
+        console.log("Connected to mongoDB");
+    });
+
+    mongoose.connection.on("error", err => {
+        console.log("Not connected to mongoDB", err);
+    });
+}
 
 const MongusSchema = mongoose.Schema;
 const FilmSchema = new MongusSchema({
@@ -30,30 +47,35 @@ const film = mongoose.model("films", FilmSchema);
 async function saveFilm(inFilm)
 {
     const filmToSave = new film(inFilm);
-    return filmToSave.save();
+    const saveResult = await filmToSave.save();
+    return saveResult;
 }
 
 async function findAllFilms()
 {
-    return film.find();
+    const findResult = await film.find();
+    return findResult;
 }
 
 async function findFilmByID(id)
 {
     const monId = new mongoose.Types.ObjectId(id);
-    return film.findById(monId);
+    const findResult = await film.findById(monId);
+    return findResult;
 }
 
 async function updateFilm(id, newFilm)
 {
     const monId = new mongoose.Types.ObjectId(id);
-    return film.updateOne({ _id: monId }, { $set : newFilm});
+    const updateResult = await film.updateOne({ _id: monId }, { $set : newFilm});
+    return updateResult;
 }
 
 async function deleteFilm(id)
 {
     const monId = new mongoose.Types.ObjectId(id);
-    return film.deleteOne({_id : monId});
+    const deleteResult = film.deleteOne({_id : monId});
+    return deleteResult;
 }
 
-module.exports = { saveFilm, findFilmByID, findAllFilms, updateFilm, deleteFilm}
+module.exports = { saveFilm, findFilmByID, findAllFilms, updateFilm, deleteFilm, dbSetUp }

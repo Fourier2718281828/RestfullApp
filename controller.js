@@ -2,15 +2,14 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const PORT = 8000;
-const mongoose = require("mongoose");
-const { mongoConfig } = require("./DB/config");
-const { saveFilm, findFilmByID, findAllFilms, updateFilm, deleteFilm } = require("./DB/database");
+const { saveFilm, findFilmByID, findAllFilms, updateFilm, deleteFilm, dbSetUp } = require("./DB/database");
 
 
 app.use(express.static(__dirname));
 app.use(bodyParser.json());
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    dbSetUp();
 });
 
 app.get("/", (req, res) => res.send("Home page"));
@@ -80,15 +79,3 @@ app.delete("/film/:id", async (req, res) => {
         });
 });
 
-mongoose.connect(mongoConfig.db, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-mongoose.connection.on("connected", () => {
-    console.log("Connected to mongoDB");
-});
-
-mongoose.connection.on("error", err => {
-    console.log("Not connected to mongoDB", err);
-});
