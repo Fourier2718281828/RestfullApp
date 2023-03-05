@@ -109,7 +109,6 @@ app.get("/film/name/:name", async (req, res) => {
 
 app.get("/film/genre/:genre", async (req, res) => {
     try {
-        console.log(req.params);
         const genre = req.params.genre;
         const result = await findFilmsByGenre(genre);
         if(!result)
